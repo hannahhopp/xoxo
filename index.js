@@ -34,7 +34,7 @@ const game = createStore(gameReducer)
 // game.subscribe(() => console.log(game.getState()))
 
 game.subscribe(printBoard)
-game.subscribe(() => console.log(winner(game.getState().board)))
+game.subscribe(() => console.log(game.getState().winner))
 game.subscribe(getInput('X'))
 game.subscribe(getInput('O'))
 

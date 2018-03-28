@@ -33,23 +33,38 @@ export const winner = board => {
 	const diag1 = [[0, 0], [1, 1], [2, 2]]
 	const diag2 = [[0, 2], [1, 1], [2, 0]]
 	const coords = [horiz1, horiz2, horiz3, vert1, vert2, diag1, diag2]
+
 	for (let dir of coords) {
 		const winner = streak(board, ...dir)
-		if (winner) return winner
+		if (winner) return winner + " is the winner!"
 	}
-	console.log(board.toArray().length)
-	return board.toArray().length === 9 ? 'DRAW' : undefined
+
+	let counter = 0
+	board.valueSeq().forEach( x => x.forEach( j => counter++))
+	return counter === 9 ? 'DRAW' : undefined
 }
 
-export default function reducer(state = initialState, action) {
-	let newTurn = action.turn === 'X' ? 'O' : 'X'
-	switch (action.type) {
-		case 'move':
-			return {
-				board: state.board.setIn(action.position, state.turn),
-				turn: newTurn
-			}
-		default:
-			return state
+function turnReducer(turn = 'X', action) {
+	let newTurn = turn === 'X' ? 'O' : 'X'
+	if (action.type === 'move') {
+		return newTurn
+	}
+	return turn
+}
+
+function boardReducer(board = Map(), action) {
+	if (action.type === 'move') {
+		return board.setIn(action.position, action.turn)
+	}
+	return board
+}
+
+export default function reducer(state = {}, action) {
+	const nextBoard = boardReducer(state.board, action)
+	const isWin = winner(nextBoard)
+	return {
+		board: nextBoard,
+		turn: turnReducer(state.turn, action),
+		winner: isWin
 	}
 }
