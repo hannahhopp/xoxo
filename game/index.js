@@ -9,6 +9,26 @@ export const move = (turn, position) => {
 }
 const initialState = { board: Map(), turn: 'X' }
 
+const streak = (board, ...coord) => {
+	
+	let player = board.hasIn(coord[0])
+	if (player === "_") {
+		return undefined
+	}
+
+	for (let i = 1; i < coord.length; i++) {
+		if (board.hasIn(coord[i]) !== player) {
+			return undefined
+		}
+	}
+	return player
+}
+
+const winner = () => {
+	
+}
+
+
 export default function reducer(state = initialState, action) {
 	let newTurn = action.turn === 'X' ? 'O' : 'X'
 	switch (action.type) {
