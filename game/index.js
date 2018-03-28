@@ -4,7 +4,7 @@ export const move = (turn, position) => {
 	return {
 		type: 'move',
 		turn: turn,
-		position: position
+		coord: position
 	}
 }
 const initialState = { board: Map(), turn: 'X' }
@@ -46,25 +46,36 @@ export const winner = board => {
 
 function turnReducer(turn = 'X', action) {
 	let newTurn = turn === 'X' ? 'O' : 'X'
-	if (action.type === 'move') {
-		return newTurn
-	}
+	if (action.type === 'move') return newTurn
 	return turn
+}
+
+function bad (state, action) {
+  if (action.turn !== state.turn) return `It's not your turn`;
+  if (!Array.isArray(action.coord) ||
+    action.coord.length !== 2 ||
+    Math.max(...action.coord) > 2 ||
+    Math.min(...action.coord) < 0 ||
+    ) return 'Invalid coordinate';
+  if (state.board.hasIn(action.coord)) return 'This spot is taken';
+  return undefined;
 }
 
 function boardReducer(board = Map(), action) {
 	if (action.type === 'move') {
-		return board.setIn(action.position, action.turn)
+		return board.setIn(action.coord, action.turn)
 	}
 	return board
 }
 
 export default function reducer(state = {}, action) {
 	const nextBoard = boardReducer(state.board, action)
-	const isWin = winner(nextBoard)
-	return {
+  const isWin = winner(nextBoard)
+
+	return ({
 		board: nextBoard,
 		turn: turnReducer(state.turn, action),
-		winner: isWin
-	}
+    winner: isWin,
+    error: undefined
+	});
 }
