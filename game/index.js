@@ -10,22 +10,42 @@ export const move = (turn, position) => {
 const initialState = { board: Map(), turn: 'X' }
 
 const streak = (board, ...coord) => {
-	
-	let player = board.hasIn(coord[0])
+	let player = board.getIn(coord[0])
 	if (player === "_") {
 		return undefined
 	}
 
 	for (let i = 1; i < coord.length; i++) {
-		if (board.hasIn(coord[i]) !== player) {
+		if (board.getIn(coord[i]) !== player) {
 			return undefined
 		}
 	}
 	return player
 }
 
-const winner = () => {
-	
+export const winner = (board) => {
+  const horiz1 = [[0,0], [0,1], [0,2]];
+  const horiz2 = [[1,0], [1,1], [1,2]];
+  const horiz3 = [[2,0], [2,1], [2,2]];
+  const vert1 = [[0,0], [1,0], [2,0]];
+  const vert2 = [[0,1], [1,1], [2,1]];
+  const vert3 = [[0,2], [1,2], [2,2]];
+  const diag1 = [[0,0], [1,1], [2,2]];
+  const diag2 = [[0,2], [1,1], [2,0]];
+	const coords = [
+    horiz1,
+    horiz2,
+    horiz3,
+    vert1,
+    vert2,
+    diag1,
+    diag2
+  ];
+  for (let dir of coords) {
+    const winner = streak(board, ...dir)
+    if (winner) return winner;
+  }
+  return undefined;
 }
 
 
